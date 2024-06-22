@@ -1,4 +1,4 @@
-FROM jenkinsci/docker-inbound-agent:latest
+FROM jenkins/jenkins:lts
 
 USER root
 
