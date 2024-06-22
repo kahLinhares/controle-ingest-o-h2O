@@ -1,20 +1,73 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+        TELEGRAM_TOKEN = credentials('telegram-token')
+        TELEGRAM_CHAT_ID = 'your-telegram-chat-id'
+        SLACK_WEBHOOK_URL = credentials('slack-webhook-url')
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/arimateiajuniorunifor/controle-ingest-o-h2O'
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    docker.build('backend', '-f backend/Dockerfile .')
+                    sh 'docker-compose up --build -d'
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Test') {
             steps {
                 script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d --build'
+                    sh 'docker exec controle-h2o_backend ./run-tests.sh'
+                }
+            }
+        }
+
+        stage('Build and Push Docker Images') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps {
+                script {
+                    sh 'docker-compose build'
+                    sh """
+                    docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}
+                    docker-compose push
+                    """
                 }
             }
         }
     }
+
+    post {
+        always {
+            script {
+                def message = currentBuild.result == 'SUCCESS' ? "Build and Tests Passed" : "Build or Tests Failed"
+                sendTelegramNotification(message)
+                sendSlackNotification(message)
+            }
+        }
+    }
+}
+
+def sendTelegramNotification(message) {
+    sh """
+    curl -s -X POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage \
+    -d chat_id=${TELEGRAM_CHAT_ID} \
+    -d text="${message}"
+    """
+}
+
+def sendSlackNotification(message) {
+    sh """
+    curl -X POST --data-urlencode "payload={\\"text\\": \\"${message}\\"}" ${SLACK_WEBHOOK_URL}
+    """
 }
