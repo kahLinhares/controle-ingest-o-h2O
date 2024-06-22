@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     // Move to the repository directory
-                    dir('controle-ingest-o-h2O') {
+                    //dir('controle-ingest-o-h2O') {
                         // Build Docker images using docker-compose
                         sh 'docker-compose up --build -d'
                     }
