@@ -13,4 +13,7 @@ RUN apt-get update && \
     chmod +x /usr/local/bin/docker-compose && \
     usermod -aG docker jenkins
 
+# Ajustar o script de inicialização do Docker para evitar problemas com ulimit
+RUN sed -i 's/ulimit -n 1048576/ulimit -n 65536/' /etc/init.d/docker
+
 USER jenkins
