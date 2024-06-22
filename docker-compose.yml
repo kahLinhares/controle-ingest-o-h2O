@@ -45,6 +45,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - app-network
+    user: root # Adicione essa linha para executar o contêiner Jenkins como root
 
 networks:
   app-network:
