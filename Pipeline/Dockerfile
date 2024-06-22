@@ -13,7 +13,4 @@ RUN apt-get update && \
     chmod +x /usr/local/bin/docker-compose && \
     usermod -aG docker jenkins
 
-# Certifique-se de que o usuário Jenkins tenha permissão para acessar o socket Docker
-RUN chmod 666 /var/run/docker.sock
-
 USER jenkins
