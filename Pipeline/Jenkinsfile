@@ -6,7 +6,7 @@ pipeline {
         GITHUB_CREDENTIALS = credentials('github-token') // ID das credenciais do GitHub no Jenkins
         REPO = 'arimateiajuniorunifor/controle-ingest-o-h2O' // Nome do seu repositório no GitHub, sem a URL completa
         DOCKERHUB_REPO = 'arimateiajunior/controle-h2o' // Nome do seu repositório no Docker Hub
-        TAG = "v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
+        TAG = "backend-v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
     }
 
     stages {
