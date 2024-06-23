@@ -8,6 +8,7 @@ pipeline {
         DOCKERHUB_REPO = 'arimateiajunior/controle-h2o' // Nome do seu repositório no Docker Hub
         TAG = "backend-v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
+        PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
     }
 
     stages {
@@ -53,9 +54,9 @@ pipeline {
                 // Executar comandos no subshell para ativar o ambiente virtual e executar os testes
                 script {
                     sh """
-                    . ${VENV_PATH}/bin/activate
-                    pip install -r /var/lib/jenkins/workspace/Pipeline - H2O/backend/requirements.txt
-                    pytest /var/lib/jenkins/workspace/Pipeline - H2O/backend/tests
+                    . '${VENV_PATH}/bin/activate'
+                    pip install -r '${PROJECT_PATH}/requirements.txt'
+                    pytest '${PROJECT_PATH}/tests'
                     """
                 }
             }
