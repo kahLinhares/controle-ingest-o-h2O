@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('token-dockerhub')
-        GITHUB_CREDENTIALS = credentials('github-token')
-        REPO = 'arimateiajuniorunifor/controle-ingest-o-h2O'
-        DOCKERHUB_REPO = 'arimateiajunior/controle-h2o'
-        TAG = "backend-v${env.BUILD_NUMBER}"
+        DOCKERHUB_CREDENTIALS = credentials('token-dockerhub') // ID das credenciais do Docker Hub no Jenkins
+        GITHUB_CREDENTIALS = credentials('github-token') // ID das credenciais do GitHub no Jenkins
+        REPO = 'arimateiajuniorunifor/controle-ingest-o-h2O' // Nome do seu repositório no GitHub, sem a URL completa
+        DOCKERHUB_REPO = 'arimateiajunior/controle-h2o' // Nome do seu repositório no Docker Hub
+        TAG = "backend-v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
-        RECIPIENTS = 'arimateiajunior.tic@gmail.com'
-        TELEGRAM_CHAT_ID = '231399891' // Verifique se este Chat ID está correto
+        RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
+        TELEGRAM_CHAT_ID = '820863867' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
     }
 
     stages {
@@ -39,8 +39,11 @@ pipeline {
                     def imageName = "${service}:latest"
                     def dockerHubTag = "${env.DOCKERHUB_REPO}:${env.TAG}"
                     
+                    // Verificar se a imagem existe antes de tentar taguear
                     sh "docker inspect --type=image ${imageName} || exit 1"
-                    sh "echo ${DOCKERHUB_CREDENTIALS} | docker login -u ${DOCKERHUB_CREDENTIALS} --password-stdin"
+                    
+                    // Login no Docker Hub
+                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                     
                     sh "docker tag ${imageName} ${dockerHubTag}"
                     sh "docker push ${dockerHubTag}"
@@ -50,6 +53,7 @@ pipeline {
 
         stage('Test Backend') {
             steps {
+                // Executar comandos no subshell para ativar o ambiente virtual e executar os testes
                 script {
                     sh """
                     . '${VENV_PATH}/bin/activate'
@@ -68,18 +72,21 @@ pipeline {
 
         stage('Send Notifications') {
             steps {
-                // Envie e-mail
+                // Enviar e-mail
                 emailext (
                     subject: "Sucesso: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                     body: "O pipeline foi executado com sucesso.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Envie mensagem pelo Telegram (usando plugin do Telegram)
-                telegramSend(
-                    chatId: "${env.TELEGRAM_CHAT_ID}",
-                    text: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
-                )
+                // Enviar mensagem pelo Telegram usando a credencial configurada
+                script {
+                    def telegramBotToken = credentials('telegram-bot-token')
+                    def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
+                    def url = "https://api.telegram.org/bot${telegramBotToken}/sendMessage"
+                    
+                    sh "curl -X POST ${url} -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message}'"
+                }
             }
         }
     }
