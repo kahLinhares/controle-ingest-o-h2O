@@ -52,5 +52,5 @@ services:
 networks:
   app-network:
 
-volumes:
-  jenkins_home:
+#volumes:
+#  jenkins_home:
