@@ -33,7 +33,7 @@ body {
 body::before {
 	display: block;
 	content: '';
-	background: url('../frontend/assets/agua.jpg') no-repeat center center;
+	background: url('./assets/agua.jpg') no-repeat center center;
 	background-size: cover;
 }
 
