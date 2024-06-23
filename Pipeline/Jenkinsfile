@@ -79,16 +79,24 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Enviar mensagem pelo Telegram usando a credencial configurada
+                // Enviar mensagem pelo Telegram usando o plugin httpRequest
                 script {
                     def telegramBotToken = credentials('telegram-bot-token')
                     def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
                     def url = "https://api.telegram.org/bot${telegramBotToken}/sendMessage"
                     
-                    // Usando withCredentials para passar o token de forma segura
-                    withCredentials([string(credentialsId: 'telegram-bot-token', variable: 'TOKEN')]) {
-                        sh "curl -X POST ${url} -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message.replaceAll("'", "\\\\'")}'"
-                    }
+                    // Montando os parâmetros para a requisição HTTP
+                    def params = [
+                        contentType: 'APPLICATION_FORM',
+                        validResponseCodes: '200',
+                        requestBody: [
+                            chat_id: env.TELEGRAM_CHAT_ID,
+                            text: message
+                        ]
+                    ]
+                    
+                    // Enviando a mensagem usando o plugin httpRequest
+                    httpRequest url: url, httpMode: 'POST', requestBody: params
                 }
             }
         }
