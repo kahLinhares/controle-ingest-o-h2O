@@ -49,10 +49,16 @@ pipeline {
 
         stage('Test Backend') {
             steps {
-                sh 'docker-compose up -d backend'
-                // Adicione aqui os comandos para rodar os testes no container do backend
-                sh 'docker-compose exec backend run-tests-script.sh' // Exemplo de comando de teste
-                sh 'docker-compose down'
+                // Ativar o ambiente virtual h2o
+                sh 'source /var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o/bin/activate'
+                
+                // Instalar dependências
+                sh 'pip install -r /var/lib/jenkins/workspace/Pipeline - H2O/backend/requirements.txt'
+                
+                // Executar os testes usando pytest no ambiente virtual
+                dir('/var/lib/jenkins/workspace/Pipeline - H2O/backend/tests') {
+                    sh 'pytest'
+                }
             }
         }
 
