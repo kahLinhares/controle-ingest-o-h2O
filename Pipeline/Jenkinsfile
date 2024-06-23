@@ -81,7 +81,7 @@ pipeline {
 
                 // Enviar mensagem pelo Telegram
                 telegramSend(
-                    text: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}",
+                    message: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}",
                     chatId: "${env.TELEGRAM_CHAT_ID}"
                 )
             }
