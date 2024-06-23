@@ -10,6 +10,7 @@ pipeline {
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
         RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
+        TELEGRAM_CHAT_ID = '231399891' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
     }
 
     stages {
@@ -25,7 +26,7 @@ pipeline {
             }
         }
 
-         stage('Verify Docker Images') {
+        stage('Verify Docker Images') {
             steps {
                 sh 'docker images'
             }
@@ -68,27 +69,31 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
+
+        stage('Send Notifications') {
+            steps {
+                // Enviar e-mail
+                emailext (
+                    subject: "Sucesso: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "O pipeline foi executado com sucesso.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
+                    to: "${env.RECIPIENTS}"
+                )
+
+                // Enviar mensagem pelo Telegram
+                telegramSend(
+                    text: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}",
+                    chatId: "${env.TELEGRAM_CHAT_ID}"
+                )
+            }
+        }
     }
 
     post {
-       // always {
-       //     sh 'docker-compose down'
-       // } 
         success {
             echo 'Pipeline executado com sucesso!'
-            emailext (
-                subject: "Sucesso: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                body: "O pipeline foi executado com sucesso.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
-                to: "${env.RECIPIENTS}" // E-mail explicitamente especificado
-            )
         }
         failure {
             echo 'Pipeline falhou.'
-            emailext (
-                subject: "Falha: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                body: "O pipeline falhou.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
-                to: "${env.RECIPIENTS}" // E-mail explicitamente especificado
-            )
         }
     }
 }
