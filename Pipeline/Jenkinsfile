@@ -81,25 +81,19 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Enviar mensagem pelo Telegram usando httpRequest
+                // Enviar mensagem pelo Telegram usando curl
                 script {
                     def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
-                    def url = "${env.TELEGRAM_API_URL}/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage"
-                    
-                    def response = httpRequest(
-                        url: url,
-                        httpMode: 'POST',
-                        contentType: 'APPLICATION_FORM',
-                        requestBody: [
-                            chat_id: env.TELEGRAM_CHAT_ID,
-                            text: message
-                        ]
-                    )
-                    
-                    if (response.status == 200) {
-                        echo "Mensagem enviada com sucesso para o Telegram."
+                    def telegramBotToken = credentials('telegram-bot-token')
+                    def curlCommand = "curl -X POST ${env.TELEGRAM_API_URL}/bot${telegramBotToken}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message}'"
+
+                    def process = curlCommand.execute()
+                    process.waitFor()
+
+                    if (process.exitValue() != 0) {
+                        error "Falha ao enviar mensagem para o Telegram. Código de Saída: ${process.exitValue()}"
                     } else {
-                        error "Falha ao enviar mensagem para o Telegram. Status: ${response.status}, Mensagem: ${response.content}"
+                        echo "Mensagem enviada com sucesso para o Telegram."
                     }
                 }
             }
