@@ -22,12 +22,24 @@ pipeline {
             }
         }
 
+         stage('Verify Docker Images') {
+            steps {
+                sh 'docker images'
+            }
+        }
+
         stage('Tag and Push to Docker Hub') {
             steps {
                 script {
-                    def service = 'backend'
-                    sh "docker tag ${service}:latest ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
-                    sh "docker push ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
+                    def service = 'pipeline-h2o_backend'
+                    def imageName = "${service}:latest"
+                    def dockerHubTag = "${env.DOCKERHUB_REPO}/backend:${env.TAG}"
+                    
+                    // Verificar se a imagem existe antes de tentar taguear
+                    sh "docker inspect --type=image ${imageName} || exit 1"
+                    
+                    sh "docker tag ${imageName} ${dockerHubTag}"
+                    sh "docker push ${dockerHubTag}"
                 }
             }
         }
