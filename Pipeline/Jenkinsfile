@@ -11,6 +11,8 @@ pipeline {
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
         RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
         TELEGRAM_CHAT_ID = '820863867' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
+        TELEGRAM_BOT_TOKEN = credentials('telegram-bot-token') // Token do bot do Telegram
+        TELEGRAM_API_URL = 'https://api.telegram.org'
     }
 
     stages {
@@ -79,13 +81,11 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Enviar mensagem pelo Telegram usando o plugin httpRequest
+                // Enviar mensagem pelo Telegram usando função Groovy para HTTP
                 script {
-                    def telegramBotToken = credentials('telegram-bot-token')
                     def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
-                    def url = "https://api.telegram.org/bot${telegramBotToken}/sendMessage"
+                    def url = "${env.TELEGRAM_API_URL}/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage"
                     
-                    // Montando os parâmetros para a requisição HTTP
                     def params = [
                         contentType: 'APPLICATION_FORM',
                         validResponseCodes: '200',
@@ -95,8 +95,12 @@ pipeline {
                         ]
                     ]
                     
-                    // Enviando a mensagem usando o plugin httpRequest
-                    httpRequest url: url, httpMode: 'POST', requestBody: params
+                    def response = sendHttpRequest(url, params)
+                    if (response.status == 200) {
+                        echo "Mensagem enviada com sucesso para o Telegram."
+                    } else {
+                        error "Falha ao enviar mensagem para o Telegram. Status: ${response.status}, Mensagem: ${response.content}"
+                    }
                 }
             }
         }
@@ -110,4 +114,15 @@ pipeline {
             echo 'Pipeline falhou.'
         }
     }
+}
+
+def sendHttpRequest(String url, Map params) {
+    def response = httpRequest(
+        url: url,
+        httpMode: 'POST',
+        contentType: params.contentType,
+        validResponseCodes: params.validResponseCodes,
+        requestBody: params.requestBody
+    )
+    return response
 }
