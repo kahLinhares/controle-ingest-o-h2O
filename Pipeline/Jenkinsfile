@@ -40,7 +40,7 @@ pipeline {
                     def dockerHubTag = "${env.DOCKERHUB_REPO}:${env.TAG}"
                     
                     sh "docker inspect --type=image ${imageName} || exit 1"
-                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                    sh "echo ${DOCKERHUB_CREDENTIALS} | docker login -u ${DOCKERHUB_CREDENTIALS} --password-stdin"
                     
                     sh "docker tag ${imageName} ${dockerHubTag}"
                     sh "docker push ${dockerHubTag}"
@@ -75,7 +75,7 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Envie mensagem pelo Telegram
+                // Envie mensagem pelo Telegram (usando plugin do Telegram)
                 telegramSend(
                     chatId: "${env.TELEGRAM_CHAT_ID}",
                     text: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
