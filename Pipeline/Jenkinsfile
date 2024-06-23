@@ -87,7 +87,7 @@ pipeline {
                     
                     // Usando withCredentials para passar o token de forma segura
                     withCredentials([string(credentialsId: 'telegram-bot-token', variable: 'TOKEN')]) {
-                        sh "curl -X POST ${url} -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message}'"
+                        sh "curl -X POST ${url} -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message.replaceAll("'", "\\\\'")}'"
                     }
                 }
             }
