@@ -81,21 +81,21 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Enviar mensagem pelo Telegram usando função Groovy para HTTP
+                // Enviar mensagem pelo Telegram usando httpRequest
                 script {
                     def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
                     def url = "${env.TELEGRAM_API_URL}/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage"
                     
-                    def params = [
+                    def response = httpRequest(
+                        url: url,
+                        httpMode: 'POST',
                         contentType: 'APPLICATION_FORM',
-                        validResponseCodes: '200',
                         requestBody: [
                             chat_id: env.TELEGRAM_CHAT_ID,
                             text: message
                         ]
-                    ]
+                    )
                     
-                    def response = sendHttpRequest(url, params)
                     if (response.status == 200) {
                         echo "Mensagem enviada com sucesso para o Telegram."
                     } else {
@@ -114,15 +114,4 @@ pipeline {
             echo 'Pipeline falhou.'
         }
     }
-}
-
-def sendHttpRequest(String url, Map params) {
-    def response = httpRequest(
-        url: url,
-        httpMode: 'POST',
-        contentType: params.contentType,
-        validResponseCodes: params.validResponseCodes,
-        requestBody: params.requestBody
-    )
-    return response
 }
