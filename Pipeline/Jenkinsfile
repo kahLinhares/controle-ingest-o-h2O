@@ -2,123 +2,63 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        GIT_REPO_URL = 'https://github.com/arimateiajuniorunifor/controle-ingest-o-h2O.git'
-        GIT_BRANCH = 'main'
-        GIT_CREDENTIALS_ID = '2e1d8568-5348-45ff-8336-11103c08687b'
+        DOCKERHUB_CREDENTIALS = credentials('token-dockerhub') // ID das credenciais do Docker Hub no Jenkins
+        GITHUB_CREDENTIALS = credentials('github-token') // ID das credenciais do GitHub no Jenkins
+        REPO = 'arimateiajuniorunifor/controle-ingest-o-h2O' // Nome do seu repositório no GitHub, sem a URL completa
+        DOCKERHUB_REPO = 'arimateiajunior/controle-h2o' // Nome do seu repositório no Docker Hub
+        TAG = "v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
     }
 
     stages {
-        stage('Prepare Workspace') {
-            steps {
-                script {
-                    deleteDir()
-                }
-            }
-        }
-
         stage('Clone Repository') {
             steps {
+                git branch: 'main', credentialsId: env.GITHUB_CREDENTIALS, url: "https://github.com/${env.REPO}.git"
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                sh 'docker-compose build'
+            }
+        }
+
+        stage('Tag and Push to Docker Hub') {
+            steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh """
-                        git init
-                        git remote add origin ${GIT_REPO_URL}
-                        git fetch --all
-                        git reset --hard origin/${GIT_BRANCH}
-                        """
+                    def services = ['frontend', 'backend', 'prometheus', 'grafana']
+                    services.each { service ->
+                        sh "docker tag ${service}:latest ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
+                        sh "docker push ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
                     }
                 }
             }
         }
 
-        stage('Verify Clone') {
+        stage('Test Backend') {
             steps {
-                script {
-                    sh 'ls -al'
-                    sh 'pwd'
-                }
+                sh 'docker-compose up -d backend'
+                // Adicione aqui os comandos para rodar os testes no container do backend
+                sh 'docker-compose exec backend run-tests-script.sh' // Exemplo de comando de teste
+                sh 'docker-compose down'
             }
         }
 
-        stage('Verify Docker') {
+        stage('Deploy to Production') {
             steps {
-                script {
-                    sh 'docker info'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    dir('controle-ingest-o-h2O') {
-                        sh 'docker-compose up --build -d'
-                    }
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    sh 'docker exec controle-h2o_backend ./run-tests.sh'
-                }
-            }
-        }
-
-        stage('Build and Push Docker Images') {
-            when {
-                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
-            }
-            steps {
-                script {
-                    dir('controle-ingest-o-h2O') {
-                        sh 'docker-compose build'
-                        sh """
-                        docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}
-                        docker-compose push
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Run Application') {
-            when {
-                expression { currentBuild.result == 'SUCCESS' }
-            }
-            steps {
-                script {
-                    dir('controle-ingest-o-h2O') {
-                        sh 'docker-compose up -d app_backend'
-                    }
-                }
+                sh 'docker-compose up -d'
             }
         }
     }
 
     post {
         always {
-            script {
-                def message = currentBuild.result == 'SUCCESS' ? "Build and Tests Passed" : "Build or Tests Failed"
-                sendTelegramNotification(message)
-                sendSlackNotification(message)
-            }
+            sh 'docker-compose down'
+        }
+        success {
+            echo 'Pipeline executado com sucesso!'
+        }
+        failure {
+            echo 'Pipeline falhou.'
         }
     }
-}
-
-def sendTelegramNotification(message) {
-    sh """
-    curl -s -X POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage \
-    -d chat_id=${TELEGRAM_CHAT_ID} \
-    -d text="${message}"
-    """
-}
-
-def sendSlackNotification(message) {
-    sh """
-    curl -X POST --data-urlencode "payload={\\"text\\": \\"${message}\\"}" ${SLACK_WEBHOOK_URL}
-    """
 }
