@@ -79,11 +79,14 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Enviar mensagem pelo Telegram
-                telegramSend(
-                    message: "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}",
-                    chatId: "${env.TELEGRAM_CHAT_ID}"
-                )
+                // Enviar mensagem pelo Telegram usando a credencial configurada
+                script {
+                    def telegramBotToken = credentials('telegram-bot-token')
+                    def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
+                    def url = "https://api.telegram.org/bot${telegramBotToken}/sendMessage"
+                    
+                    sh "curl -X POST ${url} -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message}'"
+                }
             }
         }
     }
