@@ -73,32 +73,37 @@ pipeline {
         }
 
         stage('Send Notifications') {
-            steps {
-                // Enviar e-mail
-                emailext (
-                    subject: "Sucesso: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                    body: "O pipeline foi executado com sucesso.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
-                    to: "${env.RECIPIENTS}"
-                )
+    steps {
+        // Enviar e-mail
+        emailext (
+            subject: "Sucesso: Job ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            body: "O pipeline foi executado com sucesso.\nVer detalhes no Jenkins: ${env.BUILD_URL}",
+            to: "${env.RECIPIENTS}"
+        )
 
-                // Enviar mensagem pelo Telegram usando curl
-                script {
-                    def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
-                    def telegramBotToken = credentials('telegram-bot-token')
-                    def curlCommand = "curl -X POST ${env.TELEGRAM_API_URL}/bot${telegramBotToken}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text='${message}'"
+        // Enviar mensagem pelo Telegram usando curl
+        script {
+            def message = "Pipeline concluído com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}"
+            def telegramBotToken = credentials('telegram-bot-token')
+            def curlCommand = "curl -X POST ${env.TELEGRAM_API_URL}/bot${telegramBotToken}/sendMessage -d chat_id=${env.TELEGRAM_CHAT_ID} -d text=\"${message}\""
 
-                    def process = curlCommand.execute()
-                    process.waitFor()
-
-                    if (process.exitValue() != 0) {
-                        error "Falha ao enviar mensagem para o Telegram. Código de Saída: ${process.exitValue()}"
-                    } else {
-                        echo "Mensagem enviada com sucesso para o Telegram."
-                    }
+            try {
+                def process = curlCommand.execute()
+                def output = new StringBuffer()
+                process.consumeProcessOutput(output, System.err)
+                process.waitForOrKill(10000) // Aguarda até 10 segundos
+                
+                if (process.exitValue() != 0) {
+                    error "Falha ao enviar mensagem para o Telegram. Código de Saída: ${process.exitValue()}"
+                } else {
+                    echo "Mensagem enviada com sucesso para o Telegram."
                 }
+            } catch (Exception e) {
+                error "Erro ao executar comando curl: ${e.message}"
             }
         }
     }
+}
 
     post {
         success {
