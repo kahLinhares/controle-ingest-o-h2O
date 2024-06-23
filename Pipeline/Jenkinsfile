@@ -49,15 +49,13 @@ pipeline {
 
         stage('Test Backend') {
             steps {
-                // Ativar o ambiente virtual h2o
-                sh 'source /var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o/bin/activate'
-                
-                // Instalar dependências
-                sh 'pip install -r /var/lib/jenkins/workspace/Pipeline - H2O/backend/requirements.txt'
-                
-                // Executar os testes usando pytest no ambiente virtual
-                dir('/var/lib/jenkins/workspace/Pipeline - H2O/backend/tests') {
-                    sh 'pytest'
+                // Executar comandos no subshell para ativar o ambiente virtual e executar os testes
+                script {
+                    sh """
+                    . ${VENV_PATH}/bin/activate
+                    pip install -r /var/lib/jenkins/workspace/Pipeline - H2O/backend/requirements.txt
+                    pytest /var/lib/jenkins/workspace/Pipeline - H2O/backend/tests
+                    """
                 }
             }
         }
