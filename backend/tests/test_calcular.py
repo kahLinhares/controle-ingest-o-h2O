@@ -25,4 +25,5 @@ def test_calcular(client):
 
         expected_total = payload["peso"] * ml_agua
 
+        assert 'total' in response_json  # Verifica se 'total' está presente no JSON
         assert response_json['total'] == expected_total
