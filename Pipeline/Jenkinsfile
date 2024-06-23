@@ -25,11 +25,9 @@ pipeline {
         stage('Tag and Push to Docker Hub') {
             steps {
                 script {
-                    def services = ['frontend', 'backend', 'prometheus', 'grafana']
-                    services.each { service ->
-                        sh "docker tag ${service}:latest ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
-                        sh "docker push ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
-                    }
+                    def service = 'backend'
+                    sh "docker tag ${service}:latest ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
+                    sh "docker push ${env.DOCKERHUB_REPO}/${service}:${env.TAG}"
                 }
             }
         }
