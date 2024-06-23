@@ -10,7 +10,7 @@ pipeline {
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
         RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
-        TELEGRAM_CHAT_ID = '-1001997567192' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
+        TELEGRAM_CHAT_ID = '7354805211' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
     }
 
     stages {
