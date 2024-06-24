@@ -38,7 +38,7 @@
 						<button
 							type="submit"
 							class="button-style"
-							title="Cancular informações do usuário">
+							title="Clique aqui para calcular">
 							Calcular
 						</button>
 						<!-- Adição da classe button-style -->
@@ -47,10 +47,17 @@
 			</section>
 			<section class="resultados">
 				<div id="spinner" class="spinner"></div>
-				<p id="result" class="result-style"></p>
-				<button class="button_send" title="Enviar informações para o usuário">
-					<img src="./assets/send.svg" alt="enviar" class="send" />
-				</button>
+				<div class="result_share">
+					<p id="result" class="result-style"></p>
+					<button
+						id="button_send"
+						class="button_send"
+						title="Clique aqui para enviar as informações para o seu email">
+						<img src="./assets/share.svg" alt="enviar" class="send" />
+					</button>
+				</div>
+					
+				</div>
 			</section>
 		</section>
 		<script src="./script.js"></script>

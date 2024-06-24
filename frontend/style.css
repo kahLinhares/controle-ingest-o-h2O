@@ -153,14 +153,17 @@ button:active {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	border-radius: 50%;
+	padding: 5px;
 }
 
-.button_send.show {
+.button_send.active {
 	visibility: visible; /* Torna visível quando necessário */
+	opacity: 1;
 }
 
 .send {
-	width: 32px;
+	width: 16px;
 }
 
 .resultados {
@@ -169,13 +172,16 @@ button:active {
 	width: 100%;
 }
 
-.spinner,
-#result {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	text-align: center;
+.result_share {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	height: 100%;
+}
+
+.result_share > p {
+	font-weight: bold;
 }
 
 /* spinner da home */
@@ -277,6 +283,11 @@ button:active {
 	animation: spin 4s linear infinite;
 	margin: 10px auto; /* Centraliza o spinner horizontalmente */
 	transition: visibility 0s, opacity 0.5s linear; /* Transição suave */
+	position: absolute;
+	top: 50%;
+	left: 45%;
+	transform: translate(-50%, -50%);
+	text-align: center;
 }
 
 .spinner.show {

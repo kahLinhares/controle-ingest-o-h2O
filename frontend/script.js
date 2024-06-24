@@ -4,6 +4,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 	const peso = parseFloat(document.getElementById('peso').value); // Convertendo para número
 	const spinner = document.getElementById('spinner');
 	const result = document.getElementById('result');
+	const send = document.getElementById('button_send');
 
 	// Validações adicionais no frontend
 	if (isNaN(peso) || peso <= 0) {
@@ -12,6 +13,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 	}
 
 	spinner.classList.add('show'); // Mostra o spinner
+	send.classList.remove('active'); // Esconde o botão de enviar
 	result.innerHTML = ''; // Limpa resultados anteriores
 	const startTime = Date.now(); // Registra o tempo de início da requisição
 
@@ -35,6 +37,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 			// Define um atraso para garantir que o spinner fique visível por pelo menos 2 segundos
 			setTimeout(() => {
 				spinner.classList.remove('show'); // Esconde o spinner
+				send.classList.add('active'); // Mostra o botão de enviar
 				if (data.error) {
 					result.innerText = data.error;
 				} else {
@@ -50,6 +53,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 			// Define um atraso para garantir que o spinner fique visível por pelo menos 4 segundos
 			setTimeout(() => {
 				spinner.classList.remove('show'); // Esconde o spinner
+				send.classList.remove('active'); // Esconde o botão de enviar
 				result.innerText = 'Erro ao calcular ingestão de água';
 			});
 		}, remainingTime);
