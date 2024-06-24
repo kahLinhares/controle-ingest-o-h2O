@@ -8,10 +8,12 @@ body {
 	min-height: 100vh;
 	gap: 2rem;
 	background: linear-gradient(
-		265deg,
-		rgba(255, 255, 255, 1) 0%,
-		rgba(150, 213, 237, 1) 100%
-	);
+			0deg,
+			rgba(206, 231, 241, 1) 0%,
+			rgba(207, 233, 243, 1) 50%,
+			rgba(184, 217, 230, 1) 100%
+		)
+		fixed;
 	overflow: hidden; /*esconde o conteúdo da página inicialmente*/
 	opacity: 0;
 	animation: showHome 4s forwards;
@@ -22,14 +24,12 @@ body {
 	0% {
 		opacity: 0;
 	}
-	50% {
-		opacity: 0.5;
-	}
 	100% {
 		opacity: 1;
 	}
 }
 
+/*imagem da primeira coluna*/
 body::before {
 	display: block;
 	content: '';
@@ -65,6 +65,7 @@ h1:hover {
 	animation: GradientAnimation 2s ease infinite;
 }
 
+/*animação de hover do título*/
 @keyframes GradientAnimation {
 	0% {
 		background-position: 0% 50%;
@@ -98,20 +99,17 @@ h1:hover {
 	text-align: right;
 }
 
-.input-style {
-	font-size: 14px; /* Reduzindo o tamanho da fonte */
-	border: 1px solid #ccc;
-	padding: 4px; /* Reduzindo o padding interno */
-	width: 100px; /* Ajustando a largura dos inputs */
-	box-sizing: border-box; /* Garante que o padding não aumente a largura total */
-}
-
+.input-style,
 .input-style-peso {
 	font-size: 14px; /* Reduzindo o tamanho da fonte */
 	border: 1px solid #ccc;
 	padding: 4px; /* Reduzindo o padding interno */
 	width: 100px; /* Ajustando a largura dos inputs */
 	box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+	font-family: 'Poppins';
+}
+
+.input-style-peso {
 	margin-left: 24px;
 }
 
@@ -148,13 +146,6 @@ button:hover {
 button:active {
 	box-shadow: #422800 2px 2px 0 0;
 	transform: translate(2px, 2px);
-}
-
-@media (min-width: 768px) {
-	button {
-		min-width: 120px;
-		padding: 0 25px;
-	}
 }
 
 .button_send {
@@ -257,5 +248,77 @@ button:active {
 	100% {
 		opacity: 0;
 		visibility: hidden;
+	}
+}
+
+/*responsividade*/
+@media (max-width: 900px) {
+	h1 {
+		font-size: 2rem;
+		text-align: center;
+		padding: 1rem;
+	}
+
+	.form {
+		padding: 2rem;
+		width: 250px;
+	}
+
+	.buttons {
+		margin-top: 1.5rem;
+	}
+}
+
+@media (max-width: 500px) {
+	body {
+		grid-template-columns: 1fr;
+	}
+
+	body::before {
+		display: none;
+	}
+
+	h1 {
+		font-size: 2rem;
+		text-align: center;
+		padding: 1rem;
+	}
+
+	.form {
+		padding: 2rem;
+		width: 250px;
+	}
+
+	.buttons {
+		margin-top: 1.5rem;
+	}
+}
+
+@media (max-width: 350px) {
+	.titulo {
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-size: 1.5rem;
+		text-align: center;
+		padding: 1rem;
+	}
+
+	.form {
+		padding: 2rem;
+		width: 200px;
+	}
+
+	.label-style {
+		font-size: 14px;
+	}
+
+	.input-style-peso {
+		margin-left: 20px;
+	}
+
+	.buttons {
+		margin-top: 1.5rem;
 	}
 }
