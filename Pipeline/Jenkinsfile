@@ -58,7 +58,7 @@ pipeline {
                     sh """
                     . '${VENV_PATH}/bin/activate'
                     pip install -r '${PROJECT_PATH}/requirements.txt'
-                    pytest '${PROJECT_PATH}/tests'
+                    pytest -v '${PROJECT_PATH}/tests'
                     """
                 }
             }
