@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Calculadora de Ingestão de Água</title>
 		<link rel="stylesheet" href="style.css" />
-		<!-- Referência ao arquivo CSS -->
 	</head>
 	<body>
 		<div class="spinner_overlay">
@@ -43,61 +42,17 @@
 							Calcular
 						</button>
 						<!-- Adição da classe button-style -->
-						<button
-							class="button_send"
-							title="Enviar informações para o usuário">
-							<img
-								src="./assets/send.svg"
-								alt="enviar"
-								class="send" />
-						</button>
 					</div>
 				</form>
 			</section>
-			<p id="result" class="result-style"></p>
-			<!-- Adição da classe result-style -->
+			<section class="resultados">
+				<div id="spinner" class="spinner"></div>
+				<p id="result" class="result-style"></p>
+				<button class="button_send" title="Enviar informações para o usuário">
+					<img src="./assets/send.svg" alt="enviar" class="send" />
+				</button>
+			</section>
 		</section>
-
-		<script>
-			document.getElementById('agua-form').onsubmit = function (event) {
-				event.preventDefault();
-				const idadeGrupo = document.getElementById('idade_grupo').value;
-				const peso = parseFloat(document.getElementById('peso').value); // Convertendo para número
-
-				 // Validações adicionais no frontend
-				if (isNaN(peso) || peso <= 0) {
-                document.getElementById('result').innerText = 'Peso deve ser maior que 0';
-                return;
-            	}
-
-				fetch('http://18.228.236.114:5000/calcular', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ idade_grupo: idadeGrupo, peso: peso }),
-				})
-					.then((response) => {
-						if (!response.ok) {
-							throw new Error('Erro ao calcular ingestão de água');
-						}
-						return response.json();
-						console.log(response);
-					})
-					.then((data) => {
-						if (data.error) {
-							document.getElementById('result').innerText = data.error;
-						} else {
-							document.getElementById('result').innerText =
-								'Ingestão diária de água: ' + data.total + ' ml';
-						}
-					})
-					.catch((error) => {
-						console.error('Erro:', error);
-						document.getElementById('result').innerText =
-							'Erro ao calcular ingestão de água';
-					});
-			};
-		</script>
+		<script src="./script.js"></script>
 	</body>
 </html>
