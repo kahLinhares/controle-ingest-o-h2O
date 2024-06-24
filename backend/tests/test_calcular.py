@@ -1,34 +1,100 @@
 import json
 
-def test_calcular(client):
-    test_cases = [
-        {
-            "idade_grupo": "adulto",
-            "peso": 80
-        },
-        {
-            "idade_grupo": "adulto",
-            "peso": -1
-        },
-    ]
-    for payload in test_cases:
-        response = client.post("/calcular", json=payload)  # Envia payload como JSON
+
+class TestCalcular:
+    def test_adulto_80kg(self, client):
+        idade_grupo = "adulto"
+        peso = 80
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        calc_result = 35 * 80  # 2800
+
+        assert response_json['total'] == calc_result
+        assert response.status_code == 200
     
-        response_json = response.get_json()  # Extrai JSON da resposta
-        
-        if 'error' in response_json:
-            assert response.status_code == 400  # Verifica o código de status 400 para erro
-            assert 'total' not in response_json  # Verifica se não há 'total' se há um erro
-            assert response_json['error'] == 'Peso deve ser maior que 0'  # Verifica a mensagem de erro específica
-        else:
-            ml_agua = 0
+    def test_crianca_32_5kg(self, client):
+        idade_grupo = "crianca"
+        peso = 32.5
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        calc_result = 50 * 32.5  # 1625
+
+        assert response_json['total'] == calc_result
+        assert response.status_code == 200
     
-            if payload["idade_grupo"] == "adulto":
-                ml_agua = 35
-            elif payload["idade_grupo"] == "crianca":
-                ml_agua = 50
+    def test_error_0kg(self, client):
+        idade_grupo = "crianca"
+        peso = 0
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        assert response_json.get("error", None) == "Peso é obrigatório"
+        assert response.status_code == 400
+
+
+    def test_error_peso_negativo(self, client):
+        idade_grupo = "adulto"
+        peso = -20
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        assert response_json.get("error", None) == "Peso deve ser maior que 0"
+        assert response.status_code == 400
     
-            expected_total = payload["peso"] * ml_agua
-    
-            assert 'total' in response_json  # Verifica se 'total' está presente no JSON
-            assert response_json['total'] == expected_total  # Verifica se o valor calculado está correto
+    def test_error_no_idade_grupo(self, client):
+        peso = 100
+
+        payload = {
+            "peso": peso
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        assert response_json.get("error", None) == "Grupo de Idade Inválido"
+        assert response.status_code == 400
+
+    def test_error_no_peso(self, client):
+        idade_grupo = "crianca"
+
+        payload = {
+            "idade_grupo": idade_grupo,
+        }
+
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        assert response_json.get("error", None) == "Peso é obrigatório"
+        assert response.status_code == 400
