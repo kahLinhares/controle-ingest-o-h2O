@@ -10,7 +10,7 @@ pipeline {
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
         RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
-        TELEGRAM_CHAT_ID = '820863867' // ID do chat ou canal do Telegram onde deseja enviar a mensagem
+        SLACK_CHANNEL = '#projeto-controleh2o' // Canal ou usuário do Slack para enviar a mensagem
     }
 
     stages {
@@ -81,7 +81,8 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Envie mensagem pelo Telegram            
+                // Enviar mensagem para o Slack
+                slackSend(channel: "${env.SLACK_CHANNEL}", color: 'good', message: "Pipeline executado com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}")           
             }
         }
         failure {
@@ -93,7 +94,8 @@ pipeline {
                     to: "${env.RECIPIENTS}"
                 )
 
-                // Envie mensagem pelo Telegram
+                // Enviar mensagem para o Slack
+                slackSend(channel: "${env.SLACK_CHANNEL}", color: 'good', message: "Pipeline executado com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}")           
             }
         }
     }
