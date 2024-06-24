@@ -95,7 +95,7 @@ pipeline {
                 )
 
                 // Enviar mensagem para o Slack
-                slackSend(channel: "${env.SLACK_CHANNEL}", color: 'good', message: "Pipeline executado com sucesso! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}")           
+                slackSend(channel: "${env.SLACK_CHANNEL}", color: 'good', message: "Pipeline falhou! Job: ${env.JOB_NAME} [${env.BUILD_NUMBER}]. Detalhes: ${env.BUILD_URL}")           
             }
         }
     }
