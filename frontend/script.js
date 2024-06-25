@@ -58,3 +58,37 @@ document.getElementById('agua-form').onsubmit = function (event) {
 			});
 		}, remainingTime);
 };
+
+const send = document.getElementById('button_send');
+const overlay = document.getElementById('overlay');
+const close = document.getElementById('close-btn');
+const form = document.getElementById('overlay-form');
+
+send.onclick = function () {
+	overlay.style.display = 'flex';
+};
+
+close.onclick = function () {
+	clearOverlayInputs();
+	overlay.style.display = 'none';
+};
+
+form.onsubmit = function (event) {
+	event.preventDefault();
+	const nome = document.getElementById('nome').value;
+	const email = document.getElementById('email').value;
+
+	if (!nome || !email) {
+		alert('Por favor, preencha todos os campos.');
+		return;
+	}
+
+	clearOverlayInputs();
+	overlay.style.display = 'none';
+	alert('Informações enviadas com sucesso!');
+};
+
+function clearOverlayInputs() {
+	document.getElementById('nome').value = '';
+	document.getElementById('email').value = '';
+}
