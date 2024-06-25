@@ -184,6 +184,10 @@ button:active {
 	font-weight: bold;
 }
 
+#overlay-result {
+	margin-bottom: 5px;
+}
+
 /* spinner da home */
 .loader {
 	position: absolute;

@@ -41,9 +41,12 @@ document.getElementById('agua-form').onsubmit = function (event) {
 				if (data.error) {
 					result.innerText = data.error;
 				} else {
-					result.innerText = 'Ingestão diária de água: ' + data.total + ' ml';
+					result.innerText =
+						'Ingestão diária de água: ' + data.total + ' ml por dia';
 				}
 			}, remainingTime);
+			// Exibir resultado no overlay
+			showResultInOverlay(data);
 		})
 		.catch((error) => {
 			console.error('Erro:', error);
@@ -55,8 +58,8 @@ document.getElementById('agua-form').onsubmit = function (event) {
 				spinner.classList.remove('show'); // Esconde o spinner
 				send.classList.remove('active'); // Esconde o botão de enviar
 				result.innerText = 'Erro ao calcular ingestão de água';
-			});
-		}, remainingTime);
+			}, remainingTime);
+		});
 };
 
 const send = document.getElementById('button_send');
@@ -88,7 +91,19 @@ form.onsubmit = function (event) {
 	alert('Informações enviadas com sucesso!');
 };
 
+//limpa os inputs do overlay
 function clearOverlayInputs() {
 	document.getElementById('nome').value = '';
 	document.getElementById('email').value = '';
+}
+
+//Esta função recebe o objeto data retornado pela requisição fetch
+function showResultInOverlay(data) {
+	const overlayResult = document.getElementById('overlay-result');
+	if (data.error) {
+		overlayResult.innerText = data.error;
+	} else {
+		overlayResult.innerText =
+			'Você precisa consumir ' + data.total + 'ml de água por dia';
+	}
 }
