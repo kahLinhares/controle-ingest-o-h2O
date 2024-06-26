@@ -37,7 +37,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 			// Define um atraso para garantir que o spinner fique visível por pelo menos 2 segundos
 			setTimeout(() => {
 				spinner.classList.remove('show'); // Esconde o spinner
-				send.classList.add('active'); // Mostra o botão de enviar
+				send.classList.remove('active'); // Mostra o botão de enviar
 				if (data.error) {
 					result.innerText = data.error;
 				} else {

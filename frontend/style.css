@@ -365,6 +365,13 @@ button:active {
 
 /*responsividade*/
 @media (max-width: 900px) {
+	body {
+		grid-template-columns: 1fr;
+	}
+
+	body::before {
+		display: none;
+	}
 	h1 {
 		font-size: 2rem;
 		text-align: center;
@@ -403,6 +410,12 @@ button:active {
 
 	.buttons {
 		margin-top: 1.5rem;
+	}
+
+	.result_share > p {
+		font-weight: bold;
+		width: 60%;
+		text-align: center;
 	}
 }
 
