@@ -48,7 +48,8 @@ pipeline {
                         
                         // Tag e Push da imagem
                         sh "docker tag ${imageName} ${dockerHubTag}"
-                        sh "docker push ${dockerHubTag}" 
+                        sh "docker push ${dockerHubTag}"
+                    }
                 }
             }
         }
