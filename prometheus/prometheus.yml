@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:5000']  # Substitua 'backend' pelo nome do serviço definido no seu docker-compose.yml
+
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['frontend:80']   # Substitua 'frontend' pelo nome do serviço definido no seu docker-compose.yml
+
+  # Adicione outros jobs conforme necessário para seus serviços adicionais (por exemplo, Grafana, PostgreSQL, etc.)
