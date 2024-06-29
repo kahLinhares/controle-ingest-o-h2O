@@ -1,0 +1,7 @@
+# Use a imagem base adequada para sua aplicação
+FROM prom/prometheus
+
+# Copiar o arquivo de configuração personalizado para dentro do container
+COPY prometheus.yml /etc/prometheus/prometheus.yml
+
+# Nenhuma modificação adicional necessária, prometheus já é iniciado automaticamente

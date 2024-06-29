@@ -1,0 +1,7 @@
+# Use a imagem base adequada para sua aplicação
+FROM nginx:alpine
+
+# Copiar o conteúdo do diretório local para dentro do container
+COPY . /usr/share/nginx/html
+
+# Nenhuma modificação adicional necessária, nginx já é iniciado automaticamente

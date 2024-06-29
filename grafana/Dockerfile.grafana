@@ -1,0 +1,7 @@
+# Use a imagem base adequada para sua aplicação
+FROM grafana/grafana
+
+# Configuração do ambiente, se necessário
+ENV GF_SECURITY_ADMIN_PASSWORD=admin
+
+# Nenhuma modificação adicional necessária, grafana já é iniciado automaticamente

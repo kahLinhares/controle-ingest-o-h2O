@@ -6,7 +6,7 @@ pipeline {
         GITHUB_CREDENTIALS = credentials('github-token') // ID das credenciais do GitHub no Jenkins
         REPO = 'arimateiajuniorunifor/controle-ingest-o-h2O' // Nome do seu repositório no GitHub, sem a URL completa
         DOCKERHUB_REPO = 'arimateiajunior/controle-h2o' // Nome do seu repositório no Docker Hub
-        TAG = "backend-v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
+        TAG = "v${env.BUILD_NUMBER}" // Tag baseada no número do build do Jenkins
         VENV_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend/h2o'
         PROJECT_PATH = '/var/lib/jenkins/workspace/Pipeline - H2O/backend'
         RECIPIENTS = 'arimateiajunior.tic@gmail.com' // Adicione aqui os e-mails dos destinatários
@@ -35,18 +35,24 @@ pipeline {
         stage('Tag and Push to Docker Hub') {
             steps {
                 script {
-                    def service = 'pipeline-h2o_backend'
-                    def imageName = "${service}:latest"
-                    def dockerHubTag = "${env.DOCKERHUB_REPO}:${env.TAG}"
-                    
-                    // Verificar se a imagem existe antes de tentar taguear
-                    sh "docker inspect --type=image ${imageName} || exit 1"
-                    
                     // Login no Docker Hub
                     sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-                    
-                    sh "docker tag ${imageName} ${dockerHubTag}"
-                    sh "docker push ${dockerHubTag}"
+
+                    // Obter lista de serviços do docker-compose
+                    def services = sh(script: "docker-compose config --services", returnStdout: true).trim().split()
+
+                    // Loop para tag e push de cada serviço
+                    services.each { service ->
+                        def imageName = "${service}:${TAG}"
+                        def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${TAG}"
+                        
+                        // Verificar se a imagem existe antes de tentar taguear
+                        sh "docker inspect --type=image ${imageName} || exit 1"
+                        
+                        // Tag e push para o Docker Hub
+                        sh "docker tag ${imageName} ${dockerHubTag}"
+                        sh "docker push ${dockerHubTag}"
+                    }
                 }
             }
         }
