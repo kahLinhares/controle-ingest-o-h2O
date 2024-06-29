@@ -44,11 +44,11 @@ pipeline {
 
                     // Loop para tag e push de cada serviço
                     services.each { service ->
-                        def imageName = "${service}:${TAG}"
+                        def imageName = "${service}:latest"
                         def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${TAG}"
                         
                         // Verificar se a imagem existe antes de tentar taguear
-                        //sh "docker inspect --type=image ${imageName} || exit 1"
+                        sh "docker inspect --type=image ${imageName} || exit 1"
                         
                         // Login no Docker Hub
                         sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
