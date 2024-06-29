@@ -54,7 +54,7 @@ pipeline {
                         sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                         
                         sh "docker tag ${imageName} ${dockerHubTag}"
-                        sh "docker push ${dockerHubTag}"
+                        sh "docker push ${dockerHubRepo}/${service}:${TAG}"
                     }
                 }
             }
