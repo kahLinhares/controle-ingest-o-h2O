@@ -38,22 +38,22 @@ pipeline {
                     // Login no Docker Hub
                     withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                         sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-                    }
-
-                    // Obter lista de serviços do docker-compose
-                    def services = sh(script: "docker-compose config --services", returnStdout: true).trim().split()
-
-                    // Loop para tag e push de cada serviço
-                    services.each { service ->
-                        def imageName = "${service}:${TAG}"
-                        def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${TAG}"
                         
-                        // Verificar se a imagem existe antes de tentar taguear
-                        sh "docker inspect --type=image ${imageName} || exit 1"
-                        
-                        // Tag e push para o Docker Hub
-                        sh "docker tag ${imageName} ${dockerHubTag}"
-                        sh "docker push ${dockerHubTag}"
+                        // Obter lista de serviços do docker-compose
+                        def services = sh(script: "docker-compose config --services", returnStdout: true).trim().split()
+
+                        // Loop para tag e push de cada serviço
+                        services.each { service ->
+                            def imageName = "${service}:${TAG}"
+                            def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${TAG}"
+                            
+                            // Verificar se a imagem existe antes de tentar taguear
+                            sh "docker inspect --type=image ${imageName} || exit 1"
+                            
+                            // Tag e push para o Docker Hub
+                            sh "docker tag ${imageName} ${dockerHubTag}"
+                            sh "docker push ${dockerHubTag}"
+                        }
                     }
                 }
             }
