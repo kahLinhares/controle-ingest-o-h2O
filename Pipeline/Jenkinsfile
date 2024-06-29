@@ -36,7 +36,9 @@ pipeline {
             steps {
                 script {
                     // Login no Docker Hub
-                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                    withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                    }
 
                     // Obter lista de serviços do docker-compose
                     def services = sh(script: "docker-compose config --services", returnStdout: true).trim().split()
