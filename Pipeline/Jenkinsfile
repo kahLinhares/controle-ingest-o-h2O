@@ -44,7 +44,7 @@ pipeline {
 
                     // Loop para tag e push de cada serviço
                     services.each { service ->
-                        def imageName = "${service}:latest"
+                        def imageName = "${service}:${TAG}"
                         def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${TAG}"
                         
                         // Verificar se a imagem existe antes de tentar taguear
