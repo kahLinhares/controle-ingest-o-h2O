@@ -41,7 +41,7 @@ pipeline {
                         'pipeline-h2o_prometheus',
                         'pipeline-h2o_grafana'
                     ]
-
+                    
                     // Loop para tag e push de cada serviço
                     services.each { service ->
                         def imageName = "${service}:latest"
@@ -53,8 +53,9 @@ pipeline {
                         // Login no Docker Hub
                         sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
                         
+                        // Tag e push para o Docker Hub
                         sh "docker tag ${imageName} ${dockerHubTag}"
-                        sh "docker push ${DOCKERHUB_REPO}/${service}:${TAG}"
+                        sh "docker push ${dockerHubTag}"
                     }
                 }
             }
