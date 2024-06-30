@@ -47,7 +47,7 @@ pipeline {
                 echo "Processando serviço: ${service}"
                 
                 def imageName = "${service}:latest"
-                def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${env.TAG}"
+                def dockerHubTag = "${DOCKERHUB_REPO}:${service}_${env.TAG}"
                 
                 echo "Imagem a ser tagueada: ${imageName}"
                 echo "Tag a ser utilizada: ${dockerHubTag}"
