@@ -4,5 +4,3 @@ FROM grafana/grafana
 # Configuração do ambiente, se necessário
 ENV GF_SECURITY_ADMIN_PASSWORD=admin
 
-# Copiar o arquivo de configuração personalizado para dentro do container
-COPY . grafana-data /var/lib/grafana

@@ -35,7 +35,7 @@ services:
       context: ./grafana
       dockerfile: Dockerfile.grafana
     volumes:
-      - ./grafana/grafana-data:/var/lib/grafana
+      - ./grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
     environment:
