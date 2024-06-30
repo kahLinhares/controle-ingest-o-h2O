@@ -33,33 +33,40 @@ pipeline {
         }
 
         stage('Tag and Push to Docker Hub') {
-            steps {
-                script {
-                    def services = [
-                        //'pipeline-h2o_backend',
-                        'pipeline-h2o_frontend',
-                        'pipeline-h2o_prometheus',
-                        'pipeline-h2o_grafana'
-                    ]
-                    
-                    // Loop para tag e push de cada serviço
-                    services.each { service ->
-                        def imageName = "${service}:latest"
-                        def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${env.TAG}"
-                        
-                        // Verificar se a imagem existe antes de tentar taguear
-                        sh "docker inspect --type=image ${imageName} || exit 1"
-                        
-                        // Login no Docker Hub
-                        sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
-                        
-                        // Tag e push para o Docker Hub
-                        sh "docker tag ${imageName} ${dockerHubTag}"
-                        sh "docker push ${dockerHubTag}"
-                    }
-                }
+    steps {
+        script {
+            def services = [
+                //'pipeline-h2o_backend',
+                'pipeline-h2o_frontend',
+                'pipeline-h2o_prometheus',
+                'pipeline-h2o_grafana'
+            ]
+            
+            // Loop para tag e push de cada serviço
+            services.each { service ->
+                echo "Processando serviço: ${service}"
+                
+                def imageName = "${service}:latest"
+                def dockerHubTag = "${DOCKERHUB_REPO}/${service}:${env.TAG}"
+                
+                echo "Imagem a ser tagueada: ${imageName}"
+                echo "Tag a ser utilizada: ${dockerHubTag}"
+                
+                // Verificar se a imagem existe antes de tentar taguear
+                sh "docker inspect --type=image ${imageName} || exit 1"
+                
+                // Login no Docker Hub
+                sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                
+                // Tag e push para o Docker Hub
+                sh "docker tag ${imageName} ${dockerHubTag}"
+                sh "docker push ${dockerHubTag}"
+                
+                echo "Concluído o processamento do serviço: ${service}"
             }
         }
+    }
+}
 
         stage('Test Backend') {
             steps {
