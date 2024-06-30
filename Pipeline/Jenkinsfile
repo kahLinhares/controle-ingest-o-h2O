@@ -81,6 +81,14 @@ pipeline {
             }
         }
 
+        stage('Clean up Docker Environment') {
+            steps {
+                sh 'docker-compose down'
+                sh 'docker system prune -a --volumes -f'
+                sh 'docker-compose down -v --rmi all --remove-orphans'
+            }
+        }
+
         stage('Deploy to Production') {
             steps {
                 sh 'docker-compose up -d'
