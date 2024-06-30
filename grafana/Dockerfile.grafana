@@ -4,4 +4,5 @@ FROM grafana/grafana
 # Configuração do ambiente, se necessário
 ENV GF_SECURITY_ADMIN_PASSWORD=admin
 
-# Nenhuma modificação adicional necessária, grafana já é iniciado automaticamente
+# Copiar o arquivo de configuração personalizado para dentro do container
+COPY .. grafana-data /var/lib/grafana
