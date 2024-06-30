@@ -60,7 +60,7 @@ pipeline {
                 
                 // Tag e push para o Docker Hub
                 sh "docker tag ${imageName} ${dockerHubTag}"
-                sh "docker push ${DOCKERHUB_REPO}"
+                sh "docker push ${DOCKERHUB_REPO}/${service}:${env.TAG}"
                 
                 echo "Concluído o processamento do serviço: ${service}"
             }
