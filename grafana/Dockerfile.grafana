@@ -4,3 +4,9 @@ FROM grafana/grafana
 # Configuração do ambiente, se necessário
 ENV GF_SECURITY_ADMIN_PASSWORD=admin
 
+# Ajuste das permissões no diretório de dados
+USER root
+RUN chmod -R 777 /var/lib/grafana
+
+# Volte para o usuário padrão do Grafana
+USER grafana
