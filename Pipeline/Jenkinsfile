@@ -36,7 +36,7 @@ pipeline {
     steps {
         script {
             def services = [
-                //'pipeline-h2o_backend',
+                'pipeline-h2o_backend',
                 'pipeline-h2o_frontend',
                 'pipeline-h2o_prometheus',
                 'pipeline-h2o_grafana'
@@ -60,7 +60,7 @@ pipeline {
                 
                 // Tag e push para o Docker Hub
                 sh "docker tag ${imageName} ${dockerHubTag}"
-                sh "docker push ${dockerHubTag}"
+                //sh "docker push ${dockerHubTag}"
                 
                 echo "Concluído o processamento do serviço: ${service}"
             }
