@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     def services = [
-                        'pipeline-h2o_backend',
+                        //'pipeline-h2o_backend',
                         'pipeline-h2o_frontend',
                         'pipeline-h2o_prometheus',
                         'pipeline-h2o_grafana'
