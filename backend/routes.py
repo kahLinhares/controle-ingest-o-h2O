@@ -48,6 +48,8 @@ def calcular():
             total = peso * 35  # 35 ml por kg para adultos
         elif idade_grupo == 'crianca':
             total = peso * 50  # 50 ml por kg para crianças
+        elif idade_grupo == 'gravida':
+            total = peso * 35 + 0.3 # 35 ml por kg para grávidas, mais 300 ml
         else:
             return jsonify({'error': 'Grupo de Idade Inválido'}), 400
 

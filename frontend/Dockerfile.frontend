@@ -4,4 +4,7 @@ FROM nginx:alpine
 # Copiar o conteúdo do diretório local para dentro do container
 COPY . /usr/share/nginx/html
 
+WORKDIR /usr/share/nginx/html
+RUN chmod -R 755 *
+
 # Nenhuma modificação adicional necessária, nginx já é iniciado automaticamente

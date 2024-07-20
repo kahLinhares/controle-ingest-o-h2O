@@ -119,9 +119,62 @@ class TestCalcular:
         assert response.status_code == 400
 
         # Test_calculadora_agua.py usando TDD
-    def test_DeveRetornarPesoGravidaCom70kg():
-        # Assumindo que a função `calcular_agua_para_gravidas` ainda não existe
-        from calculadora_agua import calcular_agua_para_gravidas
+        # Arrange
+    def test_DeveRetornarPesoGravidaCom70kg(self, client):
+        idade_grupo = "gravida"
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": 70
+        }
         
-        # Teste básico: 2 litros por dia mais 300 ml para grávidas
-        assert calcular_agua_para_gravidas(70) == (70 * 35) + 0.3
+        # Act
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))       
+        
+        response_json = response.get_json()
+
+        calc_result = 35 * 70 + 0.3  # resultado esperado: 2450.3
+
+        # Assert
+        assert response_json['total'] == calc_result
+        assert response.status_code == 200
+
+    def test_DeveRetornarErroSePeso0kgComGravida(self, client):
+        # Arrange
+        idade_grupo = "gravida"
+        peso = 0
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        # Act
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        
+        response_json = response.get_json()
+
+        # Assert
+        assert response_json.get("error", None) == "Peso é obrigatório"
+        assert response.status_code == 400
+
+
+    def test_DeveRetornarErroSePesoNegativoComGravida(self, client):
+        # Arrange
+        idade_grupo = "gravida"
+        peso = -70
+
+        payload = {
+            "idade_grupo": idade_grupo,
+            "peso": peso
+        }
+
+        # Act
+        response = client.post("/calcular", content_type='application/json', data=json.dumps(payload))
+
+        response_json = response.get_json()
+
+        # Assert
+        assert response_json.get("error", None) == "Peso deve ser maior que 0"
+        assert response.status_code == 400
