@@ -119,7 +119,7 @@ class TestCalcular:
         assert response.status_code == 400
 
         # Test_calculadora_agua.py usando TDD
-    def test_calculo_agua_para_gravidas():
+    def test_DeveRetornarPesoGravidaCom70kg():
         # Assumindo que a função `calcular_agua_para_gravidas` ainda não existe
         from calculadora_agua import calcular_agua_para_gravidas
         
