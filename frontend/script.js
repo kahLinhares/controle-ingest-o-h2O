@@ -17,7 +17,7 @@ document.getElementById('agua-form').onsubmit = function (event) {
 	result.innerHTML = ''; // Limpa resultados anteriores
 	const startTime = Date.now(); // Registra o tempo de início da requisição
 
-	fetch('http://calculadoradeagua.online:5000/', {
+	fetch('http://177.71.191.71:5000/calcular', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
